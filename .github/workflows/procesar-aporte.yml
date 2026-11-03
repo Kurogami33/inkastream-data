@@ -1,0 +1,54 @@
+name: Procesar aporte
+
+on:
+  issues:
+    types: [opened]
+
+concurrency:
+  group: procesar-aporte
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  procesar:
+    if: contains(github.event.issue.labels.*.name, 'aporte')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Validar y agregar
+        id: proc
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const run = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/procesar.js`);
+            await run({ context, core });
+
+      - name: Guardar cambios
+        if: steps.proc.outputs.ok == 'true'
+        run: |
+          git config user.name "inkastream-bot"
+          git config user.email "inkastream-bot@users.noreply.github.com"
+          git add catalog.json channels.m3u
+          git commit -m "Aporte #${{ github.event.issue.number }}"
+          git push
+
+      - name: Responder y cerrar
+        if: always() && steps.proc.outputs.mensaje != ''
+        uses: actions/github-script@v8
+        env:
+          MENSAJE: ${{ steps.proc.outputs.mensaje }}
+          OK: ${{ steps.proc.outputs.ok }}
+        with:
+          script: |
+            const n = context.issue.number;
+            await github.rest.issues.createComment({ ...context.repo, issue_number: n, body: process.env.MENSAJE });
+            await github.rest.issues.update({
+              ...context.repo,
+              issue_number: n,
+              state: 'closed',
+              state_reason: process.env.OK === 'true' ? 'completed' : 'not_planned',
+            });
