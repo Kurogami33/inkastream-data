@@ -1,0 +1,71 @@
+name: Aportar contenido
+description: Agrega una película, serie o canal a INKASTREAM
+title: "[Aporte] "
+labels: ["aporte"]
+body:
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo
+      options:
+        - Película
+        - Serie
+        - Canal
+    validations:
+      required: true
+  - type: input
+    id: titulo
+    attributes:
+      label: Título
+      description: Nombre de la película, serie o canal
+    validations:
+      required: true
+  - type: input
+    id: anio
+    attributes:
+      label: Año
+      description: Solo películas y series (ejemplo 1968)
+  - type: input
+    id: tmdb
+    attributes:
+      label: ID de TMDB
+      description: Solo películas y series. Es el número en la URL de themoviedb.org
+  - type: input
+    id: url
+    attributes:
+      label: Enlace (URL)
+      description: Enlace directo al video o stream (mp4, m3u8, etc.)
+    validations:
+      required: true
+  - type: input
+    id: temporada
+    attributes:
+      label: Temporada
+      description: Solo series
+  - type: input
+    id: episodio
+    attributes:
+      label: Episodio
+      description: Solo series
+  - type: input
+    id: etiqueta
+    attributes:
+      label: Etiqueta (idioma/calidad)
+      description: Opcional. Ejemplo Latino 1080p
+  - type: input
+    id: logo
+    attributes:
+      label: Logo del canal (URL)
+      description: Solo canales, opcional
+  - type: input
+    id: grupo
+    attributes:
+      label: Grupo del canal
+      description: Solo canales. Ejemplo Noticias, Deportes
+  - type: checkboxes
+    id: confirmacion
+    attributes:
+      label: Confirmación
+      options:
+        - label: Tengo derecho a compartir este enlace (contenido propio, con licencia o de dominio público)
+          required: true
